@@ -35,6 +35,9 @@ First create a package:
 
 Example of reindex:
 
+**REMEMBER: use elasticsearch binary transport port (by default 9300), not the one used for rest
+communication (by default 9200)**
+
 Without segmentation:
 
 `./run.sh -s http://host:9300/index/type -t http://host1:9300/index1/type1  -sc cluster_name -tc
