@@ -13,7 +13,7 @@ plugins {
   id 'java'
   id 'application'
   id 'maven-publish'
-  id 'pl.allegro.tech.build.axion-release' version '1.1.0'
+  id 'pl.allegro.tech.build.axion-release' version '1.2.4'
   id "com.bmuschko.nexus" version "2.3.1"
   id 'com.github.kt3k.coveralls' version '2.3.1'
 }
@@ -30,7 +30,7 @@ scmVersion {
   }
 }
 
-project.version = '1.0.0'
+project.version = scmVersion.version
 
 repositories {
     mavenCentral()
