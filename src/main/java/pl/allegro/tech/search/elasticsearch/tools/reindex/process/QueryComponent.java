@@ -15,7 +15,7 @@ public class QueryComponent {
 
   public static final int SCROLL_TIME_LIMIT = 60000;
   public static final int SCROLL_SHARD_LIMIT = 200;
-  public static final int SCROOL_TIMEOUT = 600000;
+  public static final int SCROLL_TIMEOUT = 600000;
 
   private Client client;
   private Optional<String> segmentationField;
@@ -34,6 +34,7 @@ public class QueryComponent {
     SearchRequestBuilder searchRequestBuilder = client.prepareSearch(dataPointer.getIndexName())
         .setTypes(dataPointer.getTypeName())
         .setSearchType(SearchType.SCAN)
+        .addFields("_ttl", "_source")
         .setScroll(new TimeValue(SCROLL_TIME_LIMIT))
         .setSize(SCROLL_SHARD_LIMIT);
 
@@ -45,7 +46,7 @@ public class QueryComponent {
 
   public SearchResponse getNextScrolledSearchResults(String scrollId) {
     return client.prepareSearchScroll(scrollId)
-        .setScroll(new TimeValue(SCROOL_TIMEOUT))
+        .setScroll(new TimeValue(SCROLL_TIMEOUT))
         .get();
   }
 

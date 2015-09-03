@@ -1,15 +1,16 @@
 package pl.allegro.tech.search.elasticsearch.tools.reindex.embeded;
 
-import pl.allegro.tech.search.elasticsearch.tools.reindex.connection.ElasticDataPointer;
-import pl.allegro.tech.search.elasticsearch.tools.reindex.ReindexInvokerTest;
-import pl.allegro.tech.search.elasticsearch.tools.reindex.connection.ElasticDataPointerBuilder;
+import org.elasticsearch.action.index.IndexRequestBuilder;
+import org.elasticsearch.client.Client;
 import org.elasticsearch.client.IndicesAdminClient;
 import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeBuilder;
+import pl.allegro.tech.search.elasticsearch.tools.reindex.ReindexInvokerTest;
+import pl.allegro.tech.search.elasticsearch.tools.reindex.connection.ElasticDataPointer;
+import pl.allegro.tech.search.elasticsearch.tools.reindex.connection.ElasticDataPointerBuilder;
 
-import java.util.Map;
 import java.util.stream.Stream;
 
 import static org.elasticsearch.node.NodeBuilder.nodeBuilder;
@@ -51,6 +52,10 @@ public final class EmbeddedElasticsearchCluster {
     dataNode.close();
   }
 
+  public Client client() {
+    return dataNode.client();
+  }
+
   public void deleteIndex(String targetIndex) {
     IndicesAdminClient indices = dataNode.client().admin().indices();
     if (indices.prepareExists(targetIndex).get().isExists()) {
@@ -58,10 +63,13 @@ public final class EmbeddedElasticsearchCluster {
     }
   }
 
-  public void indexDocument(String index, String type, String id, Map doc) {
-    dataNode.client().prepareIndex(index, type, id).setSource(doc).get();
+  public void indexDocument(String index, String type, IndexDocument indexDocument) {
+    IndexRequestBuilder requestBuilder = dataNode.client().prepareIndex(index, type, indexDocument.getId()).setSource(indexDocument.getDoc());
+    if (indexDocument.getTTL() != null) {
+      requestBuilder.setTTL(indexDocument.getTTL());
+    }
+    requestBuilder.get();
   }
-
 
   public boolean indexExist(String index) {
     return dataNode.client().admin().indices().prepareExists(index).get().isExists();
@@ -82,13 +90,12 @@ public final class EmbeddedElasticsearchCluster {
   public void indexWithSampleData(String sourceIndex, String type, Stream<IndexDocument> indexDocumentStream) {
     recreateIndex(sourceIndex);
     indexDocumentStream.forEach(
-        indexDocument ->
-            indexDocument(sourceIndex, type, indexDocument.getId(), indexDocument.getDoc())
+        indexDocument -> indexDocument(sourceIndex, type, indexDocument)
     );
-    refreshIndex(sourceIndex);
+    refreshIndex();
   }
 
-  private void refreshIndex(String index) {
+  public void refreshIndex() {
     dataNode.client().admin().indices().prepareRefresh().get();
   }
 
