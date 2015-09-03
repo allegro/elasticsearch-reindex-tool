@@ -1,0 +1,8 @@
+language: java
+
+install: ./gradlew assemble
+script:
+  - "./gradlew clean build"
+
+jdk:
+  - oraclejdk8
