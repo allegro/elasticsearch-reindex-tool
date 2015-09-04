@@ -34,7 +34,7 @@ public class QueryProcessTest {
   public void shouldFillQueueWhenQueryResultNotEmptyInOneChunk() throws Exception {
     //given
     SearchResponse searchResponse = new SearchResponse();
-    ProcessSynchronizer processSynchronizer = createProcessSynchronizerMock(searchResponse);
+    ProcessSynchronizer processSynchronizer = createProcessSynchronizerMock();
     QueryComponent queryComponent = mock(QueryComponent.class);
     when(queryComponent.prepareSearchScrollRequest()).thenReturn(searchResponse);
     when(queryComponent.searchResultsNotEmpty(searchResponse)).thenReturn(true);
@@ -50,8 +50,8 @@ public class QueryProcessTest {
   @Test
   public void shouldFillQueueWhenQueryResultNotEmptyInTwoChunks() throws Exception {
     //given
-    SearchResponse searchResponse = createaSearchResponseWithScrollId("scrollId");
-    ProcessSynchronizer processSynchronizer = createProcessSynchronizerMock(searchResponse);
+    SearchResponse searchResponse = createSearchResponseWithScrollId("scrollId");
+    ProcessSynchronizer processSynchronizer = createProcessSynchronizerMock();
     QueryComponent queryComponent = mock(QueryComponent.class);
     when(queryComponent.prepareSearchScrollRequest()).thenReturn(searchResponse);
     when(queryComponent.searchResultsNotEmpty(searchResponse)).thenReturn(true);
@@ -66,11 +66,11 @@ public class QueryProcessTest {
     verify(processSynchronizer).subtractWorkingQueryProcess();
   }
 
-  private SearchResponse createaSearchResponseWithScrollId(String scrollId) {
+  private SearchResponse createSearchResponseWithScrollId(String scrollId) {
     return new SearchResponse(InternalSearchResponse.empty(), scrollId, 1, 1, 1, new ShardSearchFailure[0]);
   }
 
-  private ProcessSynchronizer createProcessSynchronizerMock(SearchResponse searchResponse) {
+  private ProcessSynchronizer createProcessSynchronizerMock() {
     ProcessSynchronizer processSynchronizer = mock(ProcessSynchronizer.class);
     when(processSynchronizer.tryFillQueueWithSearchHits(any(SearchResponse.class))).thenReturn(true);
     return processSynchronizer;

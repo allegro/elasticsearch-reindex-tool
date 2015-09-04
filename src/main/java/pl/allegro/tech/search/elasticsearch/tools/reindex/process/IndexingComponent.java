@@ -26,13 +26,16 @@ public class IndexingComponent {
     return client.prepareBulk();
   }
 
-  public Optional<BulkResult> indexData(ElasticDataPointer dataPointer, SearchHit[] hits) {
+  public Optional<BulkResult> indexData(ElasticDataPointer targetDataPointer, SearchHit[] hits) {
     BulkRequestBuilder bulkRequest = createBulkRequestBuilder();
 
     for (SearchHit hit : hits) {
       Map<String, Object> source = hit.getSource();
-      IndexRequestBuilder requestBuilder = prepareIndex(dataPointer.getIndexName(), dataPointer
+      IndexRequestBuilder requestBuilder = prepareIndex(targetDataPointer.getIndexName(), targetDataPointer
           .getTypeName(), hit.getId());
+      if (hit.getFields().get("_ttl") != null) {
+        requestBuilder.setTTL(hit.getFields().get("_ttl").value());
+      }
       requestBuilder.setSource(source);
       bulkRequest.add(requestBuilder);
     }
