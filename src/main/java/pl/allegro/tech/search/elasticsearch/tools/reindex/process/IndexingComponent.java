@@ -34,8 +34,7 @@ public class IndexingComponent {
       IndexRequestBuilder requestBuilder = prepareIndex(targetDataPointer.getIndexName(), targetDataPointer
           .getTypeName(), hit.getId());
       if (hit.getFields().get("_ttl") != null) {
-        Long ttl = hit.getFields().get("_ttl").value();
-        requestBuilder.setTTL(ttl);
+        requestBuilder.setTTL(hit.getFields().get("_ttl").value());
       }
       requestBuilder.setSource(source);
       bulkRequest.add(requestBuilder);
