@@ -17,7 +17,7 @@ public class ElasticAddressParser {
       elasticAddress.setTypeName(matcher.group(4));
       return elasticAddress;
     } else {
-      throw new ParsingElasticsearchAddressException("Could not parse ELS address:" + uri);
+      throw new ParsingElasticsearchAddressException("Could not parse elasticsearch url: " + uri);
     }
   }
 }
