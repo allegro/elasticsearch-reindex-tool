@@ -25,6 +25,10 @@ public class ReindexCommandParser {
       buildReindexParameters(command);
 
     } catch (ParameterException | ParsingElasticsearchAddressException exception) {
+      JCommander.getConsole().println("Parameters error occurred:");
+      JCommander.getConsole().println(exception.getMessage());
+      JCommander.getConsole().println("");
+
       jCommander.usage();
       return false;
     }
