@@ -10,6 +10,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import pl.allegro.tech.search.elasticsearch.tools.reindex.connection.ElasticDataPointer;
+import pl.allegro.tech.search.elasticsearch.tools.reindex.connection.ElasticSearchQuery;
 import pl.allegro.tech.search.elasticsearch.tools.reindex.embeded.EmbeddedElasticsearchCluster;
 import pl.allegro.tech.search.elasticsearch.tools.reindex.embeded.IndexDocument;
 import pl.allegro.tech.search.elasticsearch.tools.reindex.query.EmptySegmentation;
@@ -52,12 +53,13 @@ public class TTLTest {
     //given
     embeddedElasticsearchCluster.createIndex(SOURCE_INDEX, DATA_TYPE, mappingWithTTL());
     embeddedElasticsearchCluster.createIndex(TARGET_INDEX, DATA_TYPE, mappingWithTTL());
+    ElasticSearchQuery elasticSearchQuery = embeddedElasticsearchCluster.createInitialQuery("");
     indexSampleDataWithTTL();
     ElasticDataPointer sourceDataPointer = embeddedElasticsearchCluster.createDataPointer(SOURCE_INDEX);
     ElasticDataPointer targetDataPointer = embeddedElasticsearchCluster.createDataPointer(TARGET_INDEX);
 
     //when
-    ReindexInvoker.invokeReindexing(sourceDataPointer, targetDataPointer, EmptySegmentation.createEmptySegmentation());
+    ReindexInvoker.invokeReindexing(sourceDataPointer, targetDataPointer, EmptySegmentation.createEmptySegmentation(), elasticSearchQuery);
     SearchResponse targetResponse = embeddedElasticsearchCluster.client().prepareSearch(TARGET_INDEX).addFields("_ttl").get();
 
     //then

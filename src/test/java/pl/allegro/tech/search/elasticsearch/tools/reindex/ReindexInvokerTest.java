@@ -2,11 +2,13 @@ package pl.allegro.tech.search.elasticsearch.tools.reindex;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
+import org.elasticsearch.search.sort.FieldSortBuilder;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import pl.allegro.tech.search.elasticsearch.tools.reindex.connection.ElasticDataPointer;
+import pl.allegro.tech.search.elasticsearch.tools.reindex.connection.ElasticSearchQuery;
 import pl.allegro.tech.search.elasticsearch.tools.reindex.embeded.EmbeddedElasticsearchCluster;
 import pl.allegro.tech.search.elasticsearch.tools.reindex.embeded.IndexDocument;
 import pl.allegro.tech.search.elasticsearch.tools.reindex.query.DoubleFieldSegmentation;
@@ -52,8 +54,9 @@ public class ReindexInvokerTest {
     embeddedElasticsearchCluster.recreateIndex(SOURCE_INDEX);
     ElasticDataPointer sourceDataPointer = embeddedElasticsearchCluster.createDataPointer(SOURCE_INDEX);
     ElasticDataPointer targetDataPointer = embeddedElasticsearchCluster.createDataPointer(TARGET_INDEX);
+    ElasticSearchQuery elasticSearchQuery = embeddedElasticsearchCluster.createInitialQuery("");
     //when
-    ReindexInvoker.invokeReindexing(sourceDataPointer, targetDataPointer, EmptySegmentation.createEmptySegmentation());
+    ReindexInvoker.invokeReindexing(sourceDataPointer, targetDataPointer, EmptySegmentation.createEmptySegmentation(), elasticSearchQuery);
     //then
     assertFalse(embeddedElasticsearchCluster.indexExist(TARGET_INDEX));
   }
@@ -64,9 +67,10 @@ public class ReindexInvokerTest {
     embeddedElasticsearchCluster.recreateIndex(SOURCE_INDEX);
     ElasticDataPointer sourceDataPointer = embeddedElasticsearchCluster.createDataPointer(SOURCE_INDEX);
     ElasticDataPointer targetDataPointer = embeddedElasticsearchCluster.createDataPointer(TARGET_INDEX);
+    ElasticSearchQuery elasticSearchQuery = embeddedElasticsearchCluster.createInitialQuery("");
     //when
     ReindexInvoker.invokeReindexing(sourceDataPointer, targetDataPointer, DoubleFieldSegmentation.create("fieldName",
-        Lists.newArrayList(1.0, 3.0)));
+        Lists.newArrayList(1.0, 3.0)), elasticSearchQuery);
     //then
     assertFalse(embeddedElasticsearchCluster.indexExist(TARGET_INDEX));
   }
@@ -77,8 +81,10 @@ public class ReindexInvokerTest {
     indexWithSampleData();
     ElasticDataPointer sourceDataPointer = embeddedElasticsearchCluster.createDataPointer(SOURCE_INDEX);
     ElasticDataPointer targetDataPointer = embeddedElasticsearchCluster.createDataPointer(TARGET_INDEX);
+    ElasticSearchQuery elasticSearchQuery = embeddedElasticsearchCluster.createInitialQuery("");
     //when
-    ReindexingSummary reindexingSummary = ReindexInvoker.invokeReindexing(sourceDataPointer, targetDataPointer, EmptySegmentation.createEmptySegmentation());
+    ReindexingSummary reindexingSummary = ReindexInvoker.invokeReindexing(sourceDataPointer, targetDataPointer,
+        EmptySegmentation.createEmptySegmentation(), elasticSearchQuery);
     //then
     assertEquals(9L, embeddedElasticsearchCluster.count(TARGET_INDEX));
     assertThat(reindexingSummary)
@@ -94,9 +100,10 @@ public class ReindexInvokerTest {
     indexWithSampleData();
     ElasticDataPointer sourceDataPointer = embeddedElasticsearchCluster.createDataPointer(SOURCE_INDEX);
     ElasticDataPointer targetDataPointer = embeddedElasticsearchCluster.createDataPointer(TARGET_INDEX);
+    ElasticSearchQuery elasticSearchQuery = embeddedElasticsearchCluster.createInitialQuery("");
     //when
     ReindexingSummary reindexingSummary = ReindexInvoker.invokeReindexing(sourceDataPointer, targetDataPointer, DoubleFieldSegmentation.create("fieldName",
-        Lists.newArrayList(1.0, 3.0, 7.0)));
+        Lists.newArrayList(1.0, 3.0, 7.0)), elasticSearchQuery);
     //then
     assertEquals(6L, embeddedElasticsearchCluster.count(TARGET_INDEX));
     assertThat(reindexingSummary)
@@ -111,14 +118,35 @@ public class ReindexInvokerTest {
     indexWithSampleData();
     ElasticDataPointer sourceDataPointer = embeddedElasticsearchCluster.createDataPointer(SOURCE_INDEX);
     ElasticDataPointer targetDataPointer = embeddedElasticsearchCluster.createDataPointer(TARGET_INDEX);
+    ElasticSearchQuery elasticSearchQuery = embeddedElasticsearchCluster.createInitialQuery("");
     //when
     ReindexingSummary reindexingSummary = ReindexInvoker.invokeReindexing(sourceDataPointer, targetDataPointer, StringPrefixSegmentation.create("fieldName",
-        Lists.newArrayList("1", "2", "3", "4")));
+        Lists.newArrayList("1", "2", "3", "4")), elasticSearchQuery);
     //then
     assertEquals(4L, embeddedElasticsearchCluster.count(TARGET_INDEX));
     assertThat(reindexingSummary)
         .hasIndexedCount(4L)
         .hasQueriedCount(4L)
+        .hasFailedIndexedCount(0L);
+  }
+
+
+  @Test
+  public void indexingWithStartQuery() throws Exception {
+    //given
+    indexWithSampleData();
+    ElasticDataPointer sourceDataPointer = embeddedElasticsearchCluster.createDataPointer(SOURCE_INDEX);
+    ElasticDataPointer targetDataPointer = embeddedElasticsearchCluster.createDataPointer(TARGET_INDEX);
+    ElasticSearchQuery elasticSearchQuery = embeddedElasticsearchCluster.createInitialQuery("" +
+        "{\"range\": {\"fieldName\" : { \"gte\" : \"5\"}}}", new FieldSortBuilder("fieldName"));
+    //when
+    ReindexingSummary reindexingSummary = ReindexInvoker.invokeReindexing(sourceDataPointer, targetDataPointer,
+        EmptySegmentation.createEmptySegmentation(), elasticSearchQuery);
+    //then
+    assertEquals(5L, embeddedElasticsearchCluster.count(TARGET_INDEX));
+    assertThat(reindexingSummary)
+        .hasIndexedCount(5L)
+        .hasQueriedCount(5L)
         .hasFailedIndexedCount(0L);
   }
 
@@ -137,8 +165,9 @@ public class ReindexInvokerTest {
     embeddedElasticsearchCluster.deleteIndex(SOURCE_INDEX);
     ElasticDataPointer sourceDataPointer = embeddedElasticsearchCluster.createDataPointer(SOURCE_INDEX);
     ElasticDataPointer targetDataPointer = embeddedElasticsearchCluster.createDataPointer(TARGET_INDEX);
+    ElasticSearchQuery elasticSearchQuery = embeddedElasticsearchCluster.createInitialQuery("");
     //when
-    ReindexInvoker.invokeReindexing(sourceDataPointer, targetDataPointer, EmptySegmentation.createEmptySegmentation());
+    ReindexInvoker.invokeReindexing(sourceDataPointer, targetDataPointer, EmptySegmentation.createEmptySegmentation(), elasticSearchQuery);
     //then
     assertFalse(embeddedElasticsearchCluster.indexExist(TARGET_INDEX));
 
