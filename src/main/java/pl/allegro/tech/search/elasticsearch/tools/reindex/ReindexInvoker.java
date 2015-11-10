@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.allegro.tech.search.elasticsearch.tools.reindex.connection.ElasticDataPointer;
 import pl.allegro.tech.search.elasticsearch.tools.reindex.connection.ElasticSearchClientFactory;
+import pl.allegro.tech.search.elasticsearch.tools.reindex.connection.ElasticSearchQuery;
 import pl.allegro.tech.search.elasticsearch.tools.reindex.process.IndexingComponent;
 import pl.allegro.tech.search.elasticsearch.tools.reindex.process.IndexingProcessBuilder;
 import pl.allegro.tech.search.elasticsearch.tools.reindex.process.ProcessConfiguration;
@@ -31,20 +32,20 @@ class ReindexInvoker {
   }
 
   public static ReindexingSummary invokeReindexing(ElasticDataPointer sourcePointer, ElasticDataPointer targetPointer, QuerySegmentation
-      segmentation) {
+      segmentation, ElasticSearchQuery query) {
     ReindexInvoker reindexInvoker = new ReindexInvoker(segmentation.getSegmentsCount());
     LOGGER.info("Starting");
-    ReindexingSummary summary = reindexInvoker.run(sourcePointer, targetPointer, segmentation);
+    ReindexingSummary summary = reindexInvoker.run(sourcePointer, targetPointer, segmentation, query);
     LOGGER.info("Ended");
     return summary;
   }
 
-  public ReindexingSummary run(ElasticDataPointer sourcePointer, ElasticDataPointer targetPointer, QuerySegmentation segmentation) {
+  public ReindexingSummary run(ElasticDataPointer sourcePointer, ElasticDataPointer targetPointer, QuerySegmentation segmentation, ElasticSearchQuery query) {
     Client sourceClient = ElasticSearchClientFactory.createClient(sourcePointer);
     Client targetClient = ElasticSearchClientFactory.createClient(targetPointer);
 
     if (indexExists(sourceClient, sourcePointer.getIndexName())) {
-      startQueriesProcesses(sourceClient, sourcePointer, segmentation);
+      startQueriesProcesses(sourceClient, sourcePointer, segmentation, query);
       startUpdatesProcesses(targetClient, targetPointer);
       processSynchronizer.waitForProcessesToEnd();
     }
@@ -70,7 +71,7 @@ class ReindexInvoker {
     );
   }
 
-  private void startQueriesProcesses(Client client, ElasticDataPointer sourcePointer, QuerySegmentation segmentation) {
+  private void startQueriesProcesses(Client client, ElasticDataPointer sourcePointer, QuerySegmentation segmentation, ElasticSearchQuery query) {
     IntStream.range(0, segmentation.getSegmentsCount())
         .mapToObj(
             i ->
@@ -79,11 +80,12 @@ class ReindexInvoker {
                     .setDataPointer(sourcePointer)
                     .setSegmentationField(segmentation.getFieldName())
                     .setBound(segmentation.getThreshold(i))
+                    .setQuery(query)
                     .createQueryComponent()
         ).map(
         queryComponent -> new QueryProcess(processSynchronizer, queryComponent)
     ).forEach(
-        queryProcess -> processExecutor.startProcess(queryProcess)
+        processExecutor::startProcess
     );
   }
 

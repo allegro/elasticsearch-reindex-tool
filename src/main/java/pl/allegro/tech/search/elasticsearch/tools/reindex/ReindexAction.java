@@ -12,7 +12,8 @@ public final class ReindexAction {
       ReindexInvoker.invokeReindexing(
           commandParser.getSourcePointer(),
           commandParser.getTargetPointer(),
-          commandParser.getSegmentation());
+          commandParser.getSegmentation(),
+          commandParser.getQuery());
     }
   }
 }

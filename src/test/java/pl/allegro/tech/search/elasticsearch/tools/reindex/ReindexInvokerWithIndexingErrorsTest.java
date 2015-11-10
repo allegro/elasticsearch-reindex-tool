@@ -8,6 +8,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import pl.allegro.tech.search.elasticsearch.tools.reindex.connection.ElasticDataPointer;
+import pl.allegro.tech.search.elasticsearch.tools.reindex.connection.ElasticSearchQuery;
 import pl.allegro.tech.search.elasticsearch.tools.reindex.embeded.EmbeddedElasticsearchCluster;
 import pl.allegro.tech.search.elasticsearch.tools.reindex.embeded.IndexDocument;
 import pl.allegro.tech.search.elasticsearch.tools.reindex.query.EmptySegmentation;
@@ -46,8 +47,9 @@ public class ReindexInvokerWithIndexingErrorsTest {
     embeddedElasticsearchCluster.createIndex(TARGET_INDEX, DATA_TYPE, createStrictMappingDefinition());
     ElasticDataPointer sourceDataPointer = embeddedElasticsearchCluster.createDataPointer(SOURCE_INDEX);
     ElasticDataPointer targetDataPointer = embeddedElasticsearchCluster.createDataPointer(TARGET_INDEX);
+    ElasticSearchQuery elasticSearchQuery = embeddedElasticsearchCluster.createInitialQuery("");
     //when
-    ReindexingSummary reindexingSummary = ReindexInvoker.invokeReindexing(sourceDataPointer, targetDataPointer, EmptySegmentation.createEmptySegmentation());
+    ReindexingSummary reindexingSummary = ReindexInvoker.invokeReindexing(sourceDataPointer, targetDataPointer, EmptySegmentation.createEmptySegmentation(), elasticSearchQuery);
     //then
     Assertions.assertThat(embeddedElasticsearchCluster.count(SOURCE_INDEX)).isEqualTo(8L);
     Assertions.assertThat(embeddedElasticsearchCluster.count(TARGET_INDEX)).isEqualTo(4L);
@@ -66,6 +68,7 @@ public class ReindexInvokerWithIndexingErrorsTest {
         Stream.concat(docsWithField1, docsWithField2));
   }
 
+  @SuppressWarnings("unchecked")
   private Stream<IndexDocument> createDocsStream(int amount, IntFunction docMapper) {
     return IntStream.range(1, amount)
         .mapToObj(docMapper);
