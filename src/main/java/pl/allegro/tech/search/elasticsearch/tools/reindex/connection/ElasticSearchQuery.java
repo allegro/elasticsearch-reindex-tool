@@ -46,7 +46,14 @@ public class ElasticSearchQuery {
     }
 
     public ElasticSearchQuery build() {
-      return new ElasticSearchQuery(query, new FieldSortBuilder(sort).order(sortOrder));
+      FieldSortBuilder fieldSortBuilder = null;
+      if (sort != null) {
+        if (sortOrder == null) {
+          sortOrder = SortOrder.ASC;
+        }
+        fieldSortBuilder = new FieldSortBuilder(sort).order(sortOrder);
+      }
+      return new ElasticSearchQuery(query, fieldSortBuilder);
     }
   }
 }
