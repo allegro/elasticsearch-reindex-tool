@@ -36,6 +36,9 @@ public class IndexingComponent {
       if (hit.getFields().get("_ttl") != null) {
         requestBuilder.setTTL(hit.getFields().get("_ttl").value());
       }
+      if (hit.getFields().get("_routing") != null) {
+        requestBuilder.setRouting(hit.getFields().get("_routing").value());
+      }
       requestBuilder.setSource(source);
       bulkRequest.add(requestBuilder);
     }
