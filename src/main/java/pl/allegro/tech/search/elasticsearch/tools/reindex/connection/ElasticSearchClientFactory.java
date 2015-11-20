@@ -15,7 +15,7 @@ public final class ElasticSearchClientFactory {
 
   public static Client createClient(ElasticDataPointer elasticDataPointer) {
     Settings settings = Settings.settingsBuilder()
-        .put("client.transport.sniff", true)
+        .put("client.transport.sniff", elasticDataPointer.isSniff())
         .put(ClusterName.SETTING, elasticDataPointer.getClusterName())
         .build();
     TransportClient client = TransportClient.builder().settings(settings).build();

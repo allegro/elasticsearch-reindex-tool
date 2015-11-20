@@ -1,8 +1,8 @@
 package pl.allegro.tech.search.elasticsearch.tools.reindex.command;
 
-import com.beust.jcommander.Parameter;
-
 import java.util.List;
+
+import com.beust.jcommander.Parameter;
 
 public class ReindexCommand {
 
@@ -28,6 +28,9 @@ public class ReindexCommand {
   @Parameter(names = { "-segmentationPrefixes" }, description = "Segmentation prefixes (comma-separated)")
   private List<String> segmentationPrefixes;
 
+  @Parameter(names = { "-disable-cluster-sniffing" }, description = "Don't try to determine additional cluster nodes (e.g. when your network only allows access to one of the nodes)")
+  private boolean disableSniff;
+
   public String getSourceClusterName() {
     return sourceClusterName;
   }
@@ -52,5 +55,9 @@ public class ReindexCommand {
 
   public String getTarget() {
     return target;
+  }
+
+  public boolean isDisableSniff() {
+    return disableSniff;
   }
 }

@@ -2,12 +2,13 @@ package pl.allegro.tech.search.elasticsearch.tools.reindex;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
+
 import pl.allegro.tech.search.elasticsearch.tools.reindex.command.ReindexCommand;
 import pl.allegro.tech.search.elasticsearch.tools.reindex.connection.ElasticDataPointer;
-import pl.allegro.tech.search.elasticsearch.tools.reindex.connection.ParsingElasticsearchAddressException;
-import pl.allegro.tech.search.elasticsearch.tools.reindex.query.QuerySegmentationFactory;
 import pl.allegro.tech.search.elasticsearch.tools.reindex.connection.ElasticDataPointerBuilder;
+import pl.allegro.tech.search.elasticsearch.tools.reindex.connection.ParsingElasticsearchAddressException;
 import pl.allegro.tech.search.elasticsearch.tools.reindex.query.QuerySegmentation;
+import pl.allegro.tech.search.elasticsearch.tools.reindex.query.QuerySegmentationFactory;
 
 public class ReindexCommandParser {
 
@@ -39,10 +40,12 @@ public class ReindexCommandParser {
     sourcePointer = ElasticDataPointerBuilder.builder()
         .setClusterName(command.getSourceClusterName())
         .setAddress(command.getSource())
+        .setSniff(!command.isDisableSniff())
         .build();
     targetPointer = ElasticDataPointerBuilder.builder()
         .setClusterName(command.getTargetClusterName())
         .setAddress(command.getTarget())
+        .setSniff(!command.isDisableSniff())
         .build();
     segmentation = getFieldSegmentation(command);
   }

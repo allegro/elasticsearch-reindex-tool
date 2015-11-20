@@ -6,6 +6,7 @@ public class ElasticDataPointerBuilder {
 
   private String clusterName = "elasticsearch";
   private ElasticAddress address;
+  private boolean sniff = true;
 
   private ElasticDataPointerBuilder() {
   }
@@ -20,9 +21,14 @@ public class ElasticDataPointerBuilder {
     return this;
   }
 
+  public ElasticDataPointerBuilder setSniff(boolean sniff) {
+    this.sniff = sniff;
+    return this;
+  }
+
   public ElasticDataPointer build() {
     return new ElasticDataPointer(address.getHost(), clusterName, address.getIndexName(), address.getTypeName(),
-        address.getPort());
+        address.getPort(), sniff);
   }
 
   public static ElasticDataPointerBuilder builder() {

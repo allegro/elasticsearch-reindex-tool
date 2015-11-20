@@ -7,13 +7,15 @@ public class ElasticDataPointer {
   private final String indexName;
   private final String typeName;
   private final int port;
+  private final boolean sniff;
 
-  ElasticDataPointer(String host, String clusterName, String indexName, String typeName, int port) {
+  ElasticDataPointer(String host, String clusterName, String indexName, String typeName, int port, boolean sniff) {
     this.host = host;
     this.clusterName = clusterName;
     this.indexName = indexName;
     this.typeName = typeName;
     this.port = port;
+    this.sniff = sniff;
   }
 
   public String getHost() {
@@ -34,5 +36,9 @@ public class ElasticDataPointer {
 
   public int getPort() {
     return port;
+  }
+
+  public boolean isSniff() {
+    return sniff;
   }
 }
