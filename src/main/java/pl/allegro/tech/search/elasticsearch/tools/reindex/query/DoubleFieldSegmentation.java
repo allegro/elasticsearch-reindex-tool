@@ -1,7 +1,5 @@
 package pl.allegro.tech.search.elasticsearch.tools.reindex.query;
 
-import org.elasticsearch.common.collect.Lists;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
