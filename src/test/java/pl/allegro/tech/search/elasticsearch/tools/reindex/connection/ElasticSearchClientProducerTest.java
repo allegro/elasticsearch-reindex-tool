@@ -1,14 +1,14 @@
 package pl.allegro.tech.search.elasticsearch.tools.reindex.connection;
 
+import static org.elasticsearch.node.NodeBuilder.nodeBuilder;
+
 import org.assertj.core.api.Assertions;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.node.Node;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import static org.elasticsearch.node.NodeBuilder.nodeBuilder;
-import static org.junit.Assert.assertEquals;
 
 public class ElasticSearchClientProducerTest {
 
@@ -18,7 +18,12 @@ public class ElasticSearchClientProducerTest {
 
   @Before
   public void setUp() throws Exception {
-    dataNode = nodeBuilder().clusterName(CLUSTER_NAME).node();
+    Settings.Builder settings = nodeBuilder().settings()
+    		.put("path.home", ".");
+
+    dataNode = nodeBuilder().
+    		settings(settings).
+    		clusterName(CLUSTER_NAME).node();
   }
 
   @After

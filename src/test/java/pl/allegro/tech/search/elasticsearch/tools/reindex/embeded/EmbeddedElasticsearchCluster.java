@@ -30,7 +30,8 @@ public final class EmbeddedElasticsearchCluster {
         .data(true);
     Settings.Builder settings = nodeBuilder.settings()
         .put("http.port", ELS_PORT)
-        .put("index.store.type", "memory")
+        //.put("index.store.type", "memory")
+        .put("path.home", ".")
         .put("transport.tcp.port", apiPort);
 
     dataNode = nodeBuilder.settings(settings).node();
