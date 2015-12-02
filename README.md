@@ -4,6 +4,12 @@ Elasticsearch reindex tool
 Elasticsearch reindex tool provides easy way to rebuild indexes, it is also possible to move indexes between clusters.
 Multiple threads are used in order to query(read) and index(write) data. In order to do that efficiently, [scan and scroll](http://www.elasticsearch.org/guide/en/elasticsearch/guide/current/scan-scroll.html) is used to retrieve batches of documents from the old index and then the [bulk API](http://www.elasticsearch.org/guide/en/elasticsearch/client/javascript-api/current/api-reference.html) to push them into new one.
 
+## Elasticsearch version compability
+
+Master branch is compatible with version 2.x
+
+If you wish to use it with version 1.x please checkout branch [1.x](https://github.com/allegro/elasticsearch-reindex-tool/tree/1.x)
+
 ## Why another reindex tool?
 
 Our idea was to speed up index rebuilding. To decrease time of reindexing, our tool reads data from old index and writes it to the new one in parallel using multiple threads. To make it possible, each thread reads piece of data from the index based on a chosen field and its values.
