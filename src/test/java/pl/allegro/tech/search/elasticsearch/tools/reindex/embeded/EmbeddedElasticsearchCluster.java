@@ -1,19 +1,20 @@
 package pl.allegro.tech.search.elasticsearch.tools.reindex.embeded;
 
-import org.elasticsearch.action.index.IndexRequestBuilder;
-import org.elasticsearch.client.Client;
-import org.elasticsearch.client.IndicesAdminClient;
-import org.elasticsearch.common.settings.ImmutableSettings;
-import org.elasticsearch.common.xcontent.XContentBuilder;
-import org.elasticsearch.node.Node;
-import org.elasticsearch.node.NodeBuilder;
-import pl.allegro.tech.search.elasticsearch.tools.reindex.ReindexInvokerTest;
-import pl.allegro.tech.search.elasticsearch.tools.reindex.connection.ElasticDataPointer;
-import pl.allegro.tech.search.elasticsearch.tools.reindex.connection.ElasticDataPointerBuilder;
+import static org.elasticsearch.node.NodeBuilder.nodeBuilder;
 
 import java.util.stream.Stream;
 
-import static org.elasticsearch.node.NodeBuilder.nodeBuilder;
+import org.elasticsearch.action.index.IndexRequestBuilder;
+import org.elasticsearch.client.Client;
+import org.elasticsearch.client.IndicesAdminClient;
+import org.elasticsearch.common.settings.Settings;
+import org.elasticsearch.common.xcontent.XContentBuilder;
+import org.elasticsearch.node.Node;
+import org.elasticsearch.node.NodeBuilder;
+
+import pl.allegro.tech.search.elasticsearch.tools.reindex.ReindexInvokerTest;
+import pl.allegro.tech.search.elasticsearch.tools.reindex.connection.ElasticDataPointer;
+import pl.allegro.tech.search.elasticsearch.tools.reindex.connection.ElasticDataPointerBuilder;
 
 public final class EmbeddedElasticsearchCluster {
 
@@ -27,9 +28,10 @@ public final class EmbeddedElasticsearchCluster {
     NodeBuilder nodeBuilder = nodeBuilder()
         .clusterName(clusterName)
         .data(true);
-    ImmutableSettings.Builder settings = nodeBuilder.settings()
+    Settings.Builder settings = nodeBuilder.settings()
         .put("http.port", ELS_PORT)
-        .put("index.store.type", "memory")
+        //.put("index.store.type", "memory")
+        .put("path.home", ".")
         .put("transport.tcp.port", apiPort);
 
     dataNode = nodeBuilder.settings(settings).node();

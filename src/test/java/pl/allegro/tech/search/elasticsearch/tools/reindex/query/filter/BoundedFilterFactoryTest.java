@@ -1,13 +1,14 @@
 package pl.allegro.tech.search.elasticsearch.tools.reindex.query.filter;
 
-import pl.allegro.tech.search.elasticsearch.tools.reindex.query.PrefixSegment;
-import pl.allegro.tech.search.elasticsearch.tools.reindex.query.RangeSegment;
-import org.elasticsearch.index.query.BaseQueryBuilder;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.elasticsearch.index.query.PrefixQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.RangeQueryBuilder;
 import org.junit.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import pl.allegro.tech.search.elasticsearch.tools.reindex.query.PrefixSegment;
+import pl.allegro.tech.search.elasticsearch.tools.reindex.query.RangeSegment;
 
 public class BoundedFilterFactoryTest {
 
@@ -17,7 +18,7 @@ public class BoundedFilterFactoryTest {
     BoundedFilterFactory factory = new BoundedFilterFactory();
     PrefixSegment anyPrefixSegment = new PrefixSegment("prefix");
     //when
-    BaseQueryBuilder filter = factory.createBoundedFilter("fieldName", anyPrefixSegment);
+    QueryBuilder filter = factory.createBoundedFilter("fieldName", anyPrefixSegment);
     //then
     assertThat(filter).isInstanceOf(PrefixQueryBuilder.class);
   }
@@ -28,7 +29,7 @@ public class BoundedFilterFactoryTest {
     BoundedFilterFactory factory = new BoundedFilterFactory();
     RangeSegment anyRangeSegment = new RangeSegment(1.0, 2.0);
     //when
-    BaseQueryBuilder filter = factory.createBoundedFilter("fieldName", anyRangeSegment);
+    QueryBuilder filter = factory.createBoundedFilter("fieldName", anyRangeSegment);
     //then
     assertThat(filter).isInstanceOf(RangeQueryBuilder.class);
   }
