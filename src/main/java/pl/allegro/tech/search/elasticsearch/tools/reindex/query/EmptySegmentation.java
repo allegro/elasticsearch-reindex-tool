@@ -1,12 +1,13 @@
 package pl.allegro.tech.search.elasticsearch.tools.reindex.query;
 
+import pl.allegro.tech.search.elasticsearch.tools.reindex.connection.ElasticSearchQuery;
+
 import java.util.Optional;
 
-public final class EmptySegmentation implements QuerySegmentation {
+public final class EmptySegmentation extends SegmentationQueryTrait implements QuerySegmentation {
 
-  public static final EmptySegmentation EMPTY_SEGMENTATION_INSTANCE = new EmptySegmentation();
-
-  private EmptySegmentation() {
+  private EmptySegmentation(ElasticSearchQuery query) {
+    super(query);
   }
 
   @Override
@@ -24,8 +25,8 @@ public final class EmptySegmentation implements QuerySegmentation {
     return Optional.empty();
   }
 
-  public static EmptySegmentation createEmptySegmentation() {
-    return EMPTY_SEGMENTATION_INSTANCE;
+  public static EmptySegmentation createEmptySegmentation(ElasticSearchQuery query) {
+    return new EmptySegmentation(query);
   }
 
 }

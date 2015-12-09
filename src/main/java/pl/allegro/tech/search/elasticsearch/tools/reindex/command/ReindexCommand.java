@@ -22,13 +22,13 @@ public class ReindexCommand {
   @Parameter(names = { "-segmentationField" }, description = "Segmentation field")
   private String segmentationField;
 
-  @Parameter(names = { "-query" }, description = "Give a query to start from")
+  @Parameter(names = { "-query" }, description = "Give a query to filter data")
   private String query;
 
-  @Parameter(names = { "-sort" }, description = "Give field to sort on")
+  @Parameter(names = { "-sort" }, description = "Give field to sort on (if query option in use)")
   private String sort;
 
-  @Parameter(names = { "-sortOrder" }, description = "Give sortOrder")
+  @Parameter(names = { "-sortOrder" }, description = "Give sortOrder (if query option in use)")
   private String sortOrder;
 
   @Parameter(names = { "-segmentationThresholds" }, description = "Segmentation thresholds (only double type)")

@@ -1,5 +1,9 @@
 package pl.allegro.tech.search.elasticsearch.tools.reindex.embeded;
 
+import static org.elasticsearch.node.NodeBuilder.nodeBuilder;
+
+import java.util.stream.Stream;
+
 import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.IndicesAdminClient;
@@ -7,15 +11,11 @@ import org.elasticsearch.common.settings.ImmutableSettings;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeBuilder;
-import org.elasticsearch.search.sort.SortBuilder;
 import pl.allegro.tech.search.elasticsearch.tools.reindex.ReindexInvokerTest;
 import pl.allegro.tech.search.elasticsearch.tools.reindex.connection.ElasticDataPointer;
 import pl.allegro.tech.search.elasticsearch.tools.reindex.connection.ElasticDataPointerBuilder;
 import pl.allegro.tech.search.elasticsearch.tools.reindex.connection.ElasticSearchQuery;
-
-import java.util.stream.Stream;
-
-import static org.elasticsearch.node.NodeBuilder.nodeBuilder;
+import pl.allegro.tech.search.elasticsearch.tools.reindex.connection.ElasticSearchQueryBuilder;
 
 public final class EmbeddedElasticsearchCluster {
 
@@ -108,10 +108,10 @@ public final class EmbeddedElasticsearchCluster {
   }
 
   public ElasticSearchQuery createInitialQuery(String query) {
-    return new ElasticSearchQuery(query);
+    return ElasticSearchQueryBuilder.builder().setQuery(query).build();
   }
 
-  public ElasticSearchQuery createInitialQuery(String query, SortBuilder sortOrder) {
-    return new ElasticSearchQuery(query, sortOrder);
+  public ElasticSearchQuery createInitialQuery(String query, String orderByField) {
+    return ElasticSearchQueryBuilder.builder().setQuery(query).setSortByField(orderByField).build();
   }
 }

@@ -1,10 +1,12 @@
 package pl.allegro.tech.search.elasticsearch.tools.reindex.process;
 
+import com.google.common.base.Strings;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.common.unit.TimeValue;
+import org.elasticsearch.search.sort.FieldSortBuilder;
 import pl.allegro.tech.search.elasticsearch.tools.reindex.connection.ElasticDataPointer;
 import pl.allegro.tech.search.elasticsearch.tools.reindex.connection.ElasticSearchQuery;
 import pl.allegro.tech.search.elasticsearch.tools.reindex.query.BoundedSegment;
@@ -41,11 +43,11 @@ public class QueryComponent {
         .setScroll(new TimeValue(SCROLL_TIME_LIMIT))
         .setSize(SCROLL_SHARD_LIMIT);
 
-    if (query != null && query.getQuery() != null && !"".equals(query.getQuery())) {
+    if (!Strings.isNullOrEmpty(query.getQuery())) {
       searchRequestBuilder.setQuery(query.getQuery());
     }
-    if (query != null && query.getSort() != null) {
-      searchRequestBuilder.addSort(query.getSort());
+    if (!Strings.isNullOrEmpty(query.getSortField())) {
+      searchRequestBuilder.addSort(new FieldSortBuilder(query.getSortField()).order(query.getSortOrder()));
     }
 
     bound.map(resolvedBound -> boundedFilterFactory.createBoundedFilter(segmentationField.get(), resolvedBound))

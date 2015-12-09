@@ -49,7 +49,7 @@ public class ReindexInvokerWithIndexingErrorsTest {
     ElasticDataPointer targetDataPointer = embeddedElasticsearchCluster.createDataPointer(TARGET_INDEX);
     ElasticSearchQuery elasticSearchQuery = embeddedElasticsearchCluster.createInitialQuery("");
     //when
-    ReindexingSummary reindexingSummary = ReindexInvoker.invokeReindexing(sourceDataPointer, targetDataPointer, EmptySegmentation.createEmptySegmentation(), elasticSearchQuery);
+    ReindexingSummary reindexingSummary = ReindexInvoker.invokeReindexing(sourceDataPointer, targetDataPointer, EmptySegmentation.createEmptySegmentation(elasticSearchQuery));
     //then
     Assertions.assertThat(embeddedElasticsearchCluster.count(SOURCE_INDEX)).isEqualTo(8L);
     Assertions.assertThat(embeddedElasticsearchCluster.count(TARGET_INDEX)).isEqualTo(4L);

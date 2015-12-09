@@ -1,18 +1,19 @@
 package pl.allegro.tech.search.elasticsearch.tools.reindex.query;
 
-import org.elasticsearch.common.collect.Lists;
+import pl.allegro.tech.search.elasticsearch.tools.reindex.connection.ElasticSearchQuery;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-public final class DoubleFieldSegmentation implements QuerySegmentation {
+public final class DoubleFieldSegmentation extends SegmentationQueryTrait implements QuerySegmentation {
 
   private final List<Double> thresholds;
 
   private final Optional<String> fieldName;
 
-  private DoubleFieldSegmentation(String fieldName, List<Double> thresholds) {
+  private DoubleFieldSegmentation(String fieldName, List<Double> thresholds, ElasticSearchQuery query) {
+    super(query);
     this.fieldName = Optional.of(fieldName);
     this.thresholds = Collections.unmodifiableList(thresholds);
   }
@@ -37,7 +38,7 @@ public final class DoubleFieldSegmentation implements QuerySegmentation {
     return Optional.of(segmentation);
   }
 
-  public static DoubleFieldSegmentation create(String fieldName, List<Double> thresholds) {
-    return new DoubleFieldSegmentation(fieldName, thresholds);
+  public static DoubleFieldSegmentation create(String fieldName, List<Double> thresholds, ElasticSearchQuery query) {
+    return new DoubleFieldSegmentation(fieldName, thresholds, query);
   }
 }

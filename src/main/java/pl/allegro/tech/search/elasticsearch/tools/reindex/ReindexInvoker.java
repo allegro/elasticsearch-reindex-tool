@@ -32,20 +32,20 @@ class ReindexInvoker {
   }
 
   public static ReindexingSummary invokeReindexing(ElasticDataPointer sourcePointer, ElasticDataPointer targetPointer, QuerySegmentation
-      segmentation, ElasticSearchQuery query) {
+      segmentation) {
     ReindexInvoker reindexInvoker = new ReindexInvoker(segmentation.getSegmentsCount());
     LOGGER.info("Starting");
-    ReindexingSummary summary = reindexInvoker.run(sourcePointer, targetPointer, segmentation, query);
+    ReindexingSummary summary = reindexInvoker.run(sourcePointer, targetPointer, segmentation);
     LOGGER.info("Ended");
     return summary;
   }
 
-  public ReindexingSummary run(ElasticDataPointer sourcePointer, ElasticDataPointer targetPointer, QuerySegmentation segmentation, ElasticSearchQuery query) {
+  public ReindexingSummary run(ElasticDataPointer sourcePointer, ElasticDataPointer targetPointer, QuerySegmentation segmentation) {
     Client sourceClient = ElasticSearchClientFactory.createClient(sourcePointer);
     Client targetClient = ElasticSearchClientFactory.createClient(targetPointer);
 
     if (indexExists(sourceClient, sourcePointer.getIndexName())) {
-      startQueriesProcesses(sourceClient, sourcePointer, segmentation, query);
+      startQueriesProcesses(sourceClient, sourcePointer, segmentation);
       startUpdatesProcesses(targetClient, targetPointer);
       processSynchronizer.waitForProcessesToEnd();
     }
@@ -71,7 +71,7 @@ class ReindexInvoker {
     );
   }
 
-  private void startQueriesProcesses(Client client, ElasticDataPointer sourcePointer, QuerySegmentation segmentation, ElasticSearchQuery query) {
+  private void startQueriesProcesses(Client client, ElasticDataPointer sourcePointer, QuerySegmentation segmentation) {
     IntStream.range(0, segmentation.getSegmentsCount())
         .mapToObj(
             i ->
@@ -80,7 +80,7 @@ class ReindexInvoker {
                     .setDataPointer(sourcePointer)
                     .setSegmentationField(segmentation.getFieldName())
                     .setBound(segmentation.getThreshold(i))
-                    .setQuery(query)
+                    .setQuery(segmentation.getQuery())
                     .createQueryComponent()
         ).map(
         queryComponent -> new QueryProcess(processSynchronizer, queryComponent)

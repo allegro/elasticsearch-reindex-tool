@@ -1,13 +1,10 @@
 package pl.allegro.tech.search.elasticsearch.tools.reindex.query.filter;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
 import org.elasticsearch.index.query.BaseQueryBuilder;
 import pl.allegro.tech.search.elasticsearch.tools.reindex.query.BoundedSegment;
 import pl.allegro.tech.search.elasticsearch.tools.reindex.query.PrefixSegment;
 import pl.allegro.tech.search.elasticsearch.tools.reindex.query.RangeSegment;
-
-import java.util.List;
 
 public class BoundedFilterFactory {
 

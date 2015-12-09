@@ -59,7 +59,7 @@ public class TTLTest {
     ElasticDataPointer targetDataPointer = embeddedElasticsearchCluster.createDataPointer(TARGET_INDEX);
 
     //when
-    ReindexInvoker.invokeReindexing(sourceDataPointer, targetDataPointer, EmptySegmentation.createEmptySegmentation(), elasticSearchQuery);
+    ReindexInvoker.invokeReindexing(sourceDataPointer, targetDataPointer, EmptySegmentation.createEmptySegmentation(elasticSearchQuery));
     SearchResponse targetResponse = embeddedElasticsearchCluster.client().prepareSearch(TARGET_INDEX).addFields("_ttl").get();
 
     //then

@@ -67,6 +67,13 @@ With segmentation by prefix on string field:
  cluster_name1 -segmentationField userId -segmentationPrefixes 1,2,3,4,5,6,7`
 
  In this example index querying will divide data into segments based on the first character of the userId field: 1,2,3,4,5,6,7
+ 
+With query option:
+
+`./run.sh -s http://host:9300/index/type -t http://host1:9300/index1/type1  -sc cluster_name -tc
+ cluster_name1 -query "{\"range\": {\"timestamp\" : {\"gte\" : \""2015-12-08T07:03:00.216Z"\"}}}" -sort _timestamp -sortOrder DESC`
+ 
+ In this example index querying will be filtered with query and reindex will take place ordered by sort field and sortOrder 
 
 Options:
 
@@ -84,7 +91,13 @@ Options:
        Segmentation prefixes (comma-separated)
     -segmentationThresholds
        Segmentation thresholds (only double type)
-
+    -query
+       Give a query to filter data 
+    -sort
+       Give field to sort on (if query option in use)
+    -sortOrder
+       Give sortOrder  (if query option in use)    
+       
 `segmentationField`, `segmentationThreshold` and `segmentationPrefixes` are optional parameters, allowing to spread
 querying for field with double values or prefix for string field
 
