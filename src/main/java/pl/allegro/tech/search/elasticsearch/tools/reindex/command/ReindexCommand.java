@@ -22,6 +22,15 @@ public class ReindexCommand {
   @Parameter(names = { "-segmentationField" }, description = "Segmentation field")
   private String segmentationField;
 
+  @Parameter(names = { "-query" }, description = "Give a query to filter data")
+  private String query;
+
+  @Parameter(names = { "-sort" }, description = "Give field to sort on (if query option in use)")
+  private String sort;
+
+  @Parameter(names = { "-sortOrder" }, description = "Give sortOrder (if query option in use)")
+  private String sortOrder;
+
   @Parameter(names = { "-segmentationThresholds" }, description = "Segmentation thresholds (only double type)")
   private List<Double> segmentationThresholds;
 
@@ -36,6 +45,18 @@ public class ReindexCommand {
   }
   public String getSegmentationField() {
     return segmentationField;
+  }
+
+  public String getQuery() {
+    return query;
+  }
+
+  public String getSort() {
+    return sort;
+  }
+
+  public String getSortOrder() {
+    return sortOrder;
   }
 
   public List<Double> getSegmentationThresholds() {
