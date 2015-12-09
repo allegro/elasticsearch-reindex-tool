@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pl.allegro.tech.search.elasticsearch.tools.reindex.connection.ElasticDataPointer;
 import pl.allegro.tech.search.elasticsearch.tools.reindex.connection.ElasticSearchClientFactory;
+import pl.allegro.tech.search.elasticsearch.tools.reindex.connection.ElasticSearchQuery;
 import pl.allegro.tech.search.elasticsearch.tools.reindex.process.IndexingComponent;
 import pl.allegro.tech.search.elasticsearch.tools.reindex.process.IndexingProcessBuilder;
 import pl.allegro.tech.search.elasticsearch.tools.reindex.process.ProcessConfiguration;
@@ -79,11 +80,12 @@ class ReindexInvoker {
                     .setDataPointer(sourcePointer)
                     .setSegmentationField(segmentation.getFieldName())
                     .setBound(segmentation.getThreshold(i))
+                    .setQuery(segmentation.getQuery())
                     .createQueryComponent()
         ).map(
         queryComponent -> new QueryProcess(processSynchronizer, queryComponent)
     ).forEach(
-        queryProcess -> processExecutor.startProcess(queryProcess)
+        processExecutor::startProcess
     );
   }
 

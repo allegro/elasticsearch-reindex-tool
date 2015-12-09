@@ -1,7 +1,11 @@
 package pl.allegro.tech.search.elasticsearch.tools.reindex;
 
+import jdk.nashorn.internal.parser.JSONParser;
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
+import org.elasticsearch.index.mapper.ObjectMappers;
+import org.elasticsearch.index.mapper.object.ObjectMapper;
+import org.elasticsearch.search.sort.SortOrder;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -117,6 +121,102 @@ public class ReindexCommandParserTest {
     Assert.assertEquals(false, result);
 
   }
+
+  @Test
+  public void parseCommandWithoutSortOrderAndQueryAndSortField() {
+    //given
+    ReindexCommandParser commandParser = new ReindexCommandParser();
+    //when
+    commandParser.tryParse(createArgumentArray(
+        "-sc", "sourceClusterName",
+        "-tc", "targetClusterName",
+        "-s", "http://sourceHost1:9333/source_index/source_type",
+        "-t", "http://targetHost1:9333/target_index/target_type"
+    ));
+    //then
+    Assert.assertNull(commandParser.getSegmentation().getQuery().getQuery());
+  }
+
+  @Test
+  public void parseCommandWithQuery() {
+    //given
+    ReindexCommandParser commandParser = new ReindexCommandParser();
+    //when
+    String query = "{range\": {\"_timestamp\" : {\"gte\" : 1447142880000}}}";
+    commandParser.tryParse(createArgumentArray(
+        "-sc", "sourceClusterName",
+        "-tc", "targetClusterName",
+        "-s", "http://sourceHost1:9333/source_index/source_type",
+        "-t", "http://targetHost1:9333/target_index/target_type",
+        "-query", query
+    ));
+    //then
+    Assert.assertEquals(query, commandParser.getSegmentation().getQuery().getQuery());
+  }
+
+  @Test
+  public void parseCommandWithSortField() {
+    //given
+    ReindexCommandParser commandParser = new ReindexCommandParser();
+    //when
+    boolean result = commandParser.tryParse(createArgumentArray(
+        "-sc", "sourceClusterName",
+        "-tc", "targetClusterName",
+        "-s", "http://sourceHost1:9333/source_index/source_type",
+        "-t", "http://targetHost1:9333/target_index/target_type",
+        "-sort", "_timestamp"
+    ));
+    //then
+    Assert.assertEquals("_timestamp", commandParser.getSegmentation().getQuery().getSortField());
+  }
+
+  @Test
+  public void parseCommandWithSortOrderDESC() {
+    //given
+    ReindexCommandParser commandParser = new ReindexCommandParser();
+    //when
+    boolean result = commandParser.tryParse(createArgumentArray(
+        "-sc", "sourceClusterName",
+        "-tc", "targetClusterName",
+        "-s", "http://sourceHost1:9333/source_index/source_type",
+        "-t", "http://targetHost1:9333/target_index/target_type",
+        "-sortOrder", "DESC"
+    ));
+    //then
+    Assert.assertEquals(SortOrder.DESC, commandParser.getSegmentation().getQuery().getSortOrder());
+  }
+
+  @Test
+  public void parseCommandWithSortOrderASC() {
+    //given
+    ReindexCommandParser commandParser = new ReindexCommandParser();
+    //when
+    boolean result = commandParser.tryParse(createArgumentArray(
+        "-sc", "sourceClusterName",
+        "-tc", "targetClusterName",
+        "-s", "http://sourceHost1:9333/source_index/source_type",
+        "-t", "http://targetHost1:9333/target_index/target_type",
+        "-sortOrder", "ASC"
+    ));
+    //then
+    Assert.assertEquals(SortOrder.ASC, commandParser.getSegmentation().getQuery().getSortOrder());
+  }
+
+  @Test
+  public void parseCommandWithSortOrderDefaultASC() {
+    //given
+    ReindexCommandParser commandParser = new ReindexCommandParser();
+    //when
+    boolean result = commandParser.tryParse(createArgumentArray(
+        "-sc", "sourceClusterName",
+        "-tc", "targetClusterName",
+        "-s", "http://sourceHost1:9333/source_index/source_type",
+        "-t", "http://targetHost1:9333/target_index/target_type"
+    ));
+    //then
+    Assert.assertEquals(SortOrder.ASC, commandParser.getSegmentation().getQuery().getSortOrder());
+  }
+
 
   private String[] createArgumentArray(String... args) {
     return args;
