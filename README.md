@@ -86,6 +86,10 @@ Options:
        Target f.e. http://localhost:9300/target_index/type
     -tc, target-cluster
        Target cluster name
+    -disable-cluster-sniffing
+       Don't try to determine additional cluster nodes (e.g. when your network
+       only allows access to one of the nodes)
+       Default: false
     -segmentationField
        Segmentation field
     -segmentationPrefixes
@@ -101,6 +105,10 @@ Options:
        
 `segmentationField`, `segmentationThreshold` and `segmentationPrefixes` are optional parameters, allowing to spread
 querying for field with double values or prefix for string field
+
+`disable-cluster-sniffing` allows to work in cases where the network-setup makes it impossible to connect to all nodes
+of the source or target cluster. Note that it may lead to slightly reduced reindexing rates as data can only be sent
+via one node then.
 
 During reindex process progress message is prompted after each scroll query.
 

@@ -1,24 +1,20 @@
 package pl.allegro.tech.search.elasticsearch.tools.reindex;
 
-import jdk.nashorn.internal.parser.JSONParser;
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
-import org.elasticsearch.index.mapper.ObjectMappers;
-import org.elasticsearch.index.mapper.object.ObjectMapper;
 import org.elasticsearch.search.sort.SortOrder;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import pl.allegro.tech.search.elasticsearch.tools.reindex.connection.ElasticDataPointerAssert;
 import pl.allegro.tech.search.elasticsearch.tools.reindex.query.PrefixSegment;
 import pl.allegro.tech.search.elasticsearch.tools.reindex.query.RangeSegment;
 
 import java.util.Optional;
 
 import static pl.allegro.tech.search.elasticsearch.tools.reindex.connection.ElasticDataPointerAssert.assertThat;
+import static pl.allegro.tech.search.elasticsearch.tools.reindex.query.PrefixSegmentAssert.assertThat;
 import static pl.allegro.tech.search.elasticsearch.tools.reindex.query.QuerySegmentationAssert.assertThat;
 import static pl.allegro.tech.search.elasticsearch.tools.reindex.query.RangeSegmentAssert.assertThat;
-import static pl.allegro.tech.search.elasticsearch.tools.reindex.query.PrefixSegmentAssert.assertThat;
 
 @RunWith(JUnitParamsRunner.class)
 public class ReindexCommandParserTest {
@@ -217,6 +213,39 @@ public class ReindexCommandParserTest {
     Assert.assertEquals(SortOrder.ASC, commandParser.getSegmentation().getQuery().getSortOrder());
   }
 
+  @Test
+  public void parseDisableClusterSniffing() {
+    //given
+    ReindexCommandParser commandParser = new ReindexCommandParser();
+    //when
+    boolean result = commandParser.tryParse(createArgumentArray(
+        "-sc", "sourceClusterName",
+        "-tc", "targetClusterName",
+        "-s", "http://sourceHost1:9333/source_index/source_type",
+        "-t", "http://targetHost1:9333/target_index/target_type",
+        "-disable-cluster-sniffing"
+    ));
+    //then
+    Assert.assertFalse(commandParser.getSourcePointer().isSniff());
+    Assert.assertFalse(commandParser.getTargetPointer().isSniff());
+  }
+
+  @Test
+  public void parseWhenNotDisabledClusterSniffing() {
+    //given
+    ReindexCommandParser commandParser = new ReindexCommandParser();
+    //when
+    boolean result = commandParser.tryParse(createArgumentArray(
+        "-sc", "sourceClusterName",
+        "-tc", "targetClusterName",
+        "-s", "http://sourceHost1:9333/source_index/source_type",
+        "-t", "http://targetHost1:9333/target_index/target_type"
+    ));
+    //then
+    Assert.assertTrue(commandParser.getSourcePointer().isSniff());
+    Assert.assertTrue(commandParser.getTargetPointer().isSniff());
+
+  }
 
   private String[] createArgumentArray(String... args) {
     return args;
