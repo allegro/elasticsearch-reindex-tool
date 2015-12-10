@@ -71,7 +71,8 @@ With segmentation by prefix on string field:
 With query option:
 
 `./run.sh -s http://host:9300/index/type -t http://host1:9300/index1/type1  -sc cluster_name -tc
- cluster_name1 -query "{\"range\": {\"timestamp\" : {\"gte\" : \""2015-12-08T07:03:00.216Z"\"}}}" -sort _timestamp -sortOrder DESC`
+ cluster_name1 -query "{\"range\": {\"timestamp\" : {\"gte\" : \"2015-12-08T07:03:00.216Z\"}}}" -sort _timestamp 
+ -sortOrder DESC`
  
  In this example index querying will be filtered with query and reindex will take place ordered by sort field and sortOrder 
 
