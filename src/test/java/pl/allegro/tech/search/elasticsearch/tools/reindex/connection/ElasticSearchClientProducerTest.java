@@ -45,4 +45,35 @@ public class ElasticSearchClientProducerTest {
     client.close();
   }
 
+
+  @Test
+  public void validateCreatedLocalElasticClientWithoutSniff() throws Exception {
+    //given
+    ElasticDataPointer dataPointer = ElasticDataPointerBuilder.builder()
+        .setAddress("http://localhost:9300/"+INDEX_NAME+"/type")
+        .setClusterName(CLUSTER_NAME)
+        .setSniff(false)
+        .build();
+    //when
+    Client client = ElasticSearchClientFactory.createClient(dataPointer);
+    //then
+    Assertions.assertThat(client.settings().get("cluster.name")).isEqualTo(CLUSTER_NAME);
+    client.close();
+  }
+
+  @Test
+  public void validateCreatedLocalElasticClientWithSniff() throws Exception {
+    //given
+    ElasticDataPointer dataPointer = ElasticDataPointerBuilder.builder()
+        .setAddress("http://localhost:9300/"+INDEX_NAME+"/type")
+        .setClusterName(CLUSTER_NAME)
+        .setSniff(true)
+        .build();
+    //when
+    Client client = ElasticSearchClientFactory.createClient(dataPointer);
+    //then
+    Assertions.assertThat(client.settings().get("cluster.name")).isEqualTo(CLUSTER_NAME);
+    client.close();
+  }
+
 }
