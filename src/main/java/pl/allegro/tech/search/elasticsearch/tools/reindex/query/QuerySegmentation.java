@@ -12,5 +12,5 @@ public interface QuerySegmentation {
 
   Optional<BoundedSegment> getThreshold(int i);
 
-  ElasticSearchQuery getQuery();
+  ElasticSearchQuery getQuery(int i);
 }

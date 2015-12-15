@@ -5,6 +5,8 @@ import pl.allegro.tech.search.elasticsearch.tools.reindex.connection.ElasticSear
 import pl.allegro.tech.search.elasticsearch.tools.reindex.query.BoundedSegment;
 import org.elasticsearch.client.Client;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 public final class QueryComponentBuilder {
@@ -41,7 +43,6 @@ public final class QueryComponentBuilder {
     this.query = query;
     return this;
   }
-
 
   public static QueryComponentBuilder builder() {
     return new QueryComponentBuilder();

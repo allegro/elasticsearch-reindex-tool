@@ -7,7 +7,7 @@ import java.util.Optional;
 public final class EmptySegmentation extends SegmentationQueryTrait implements QuerySegmentation {
 
   private EmptySegmentation(ElasticSearchQuery query) {
-    super(query);
+    super(query, false);
   }
 
   @Override
@@ -23,6 +23,11 @@ public final class EmptySegmentation extends SegmentationQueryTrait implements Q
   @Override
   public Optional<BoundedSegment> getThreshold(int i) {
     return Optional.empty();
+  }
+
+  @Override
+  public ElasticSearchQuery getQuery(int i) {
+    return this.getQuery();
   }
 
   public static EmptySegmentation createEmptySegmentation(ElasticSearchQuery query) {

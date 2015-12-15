@@ -12,7 +12,9 @@ import pl.allegro.tech.search.elasticsearch.tools.reindex.connection.ElasticSear
 import pl.allegro.tech.search.elasticsearch.tools.reindex.query.BoundedSegment;
 import pl.allegro.tech.search.elasticsearch.tools.reindex.query.filter.BoundedFilterFactory;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class QueryComponent {
 
@@ -37,11 +39,11 @@ public class QueryComponent {
 
   public SearchResponse prepareSearchScrollRequest() {
     SearchRequestBuilder searchRequestBuilder = client.prepareSearch(dataPointer.getIndexName())
-        .setTypes(dataPointer.getTypeName())
-        .setSearchType(SearchType.SCAN)
-        .addFields("_ttl", "_source")
-        .setScroll(new TimeValue(SCROLL_TIME_LIMIT))
-        .setSize(SCROLL_SHARD_LIMIT);
+            .setTypes(dataPointer.getTypeName())
+            .setSearchType(SearchType.SCAN)
+            .addFields("_ttl", "_source")
+            .setScroll(new TimeValue(SCROLL_TIME_LIMIT))
+            .setSize(SCROLL_SHARD_LIMIT);
 
     if (!Strings.isNullOrEmpty(query.getQuery())) {
       searchRequestBuilder.setQuery(query.getQuery());
@@ -49,17 +51,21 @@ public class QueryComponent {
     if (!Strings.isNullOrEmpty(query.getSortField())) {
       searchRequestBuilder.addSort(new FieldSortBuilder(query.getSortField()).order(query.getSortOrder()));
     }
+    if (query.getShards() != null && !query.getShards().isEmpty()) {
+      String joinedShards = String.join(",", query.getShards().stream().map(shard -> shard.toString()).collect(Collectors.toList()));
+      searchRequestBuilder.setPreference("_shards:" + joinedShards);
+    }
 
     bound.map(resolvedBound -> boundedFilterFactory.createBoundedFilter(segmentationField.get(), resolvedBound))
-        .ifPresent(searchRequestBuilder::setQuery);
+            .ifPresent(searchRequestBuilder::setQuery);
 
     return searchRequestBuilder.execute().actionGet();
   }
 
   public SearchResponse getNextScrolledSearchResults(String scrollId) {
     return client.prepareSearchScroll(scrollId)
-        .setScroll(new TimeValue(SCROLL_TIMEOUT))
-        .get();
+            .setScroll(new TimeValue(SCROLL_TIMEOUT))
+            .get();
   }
 
   int getResponseSize(SearchResponse response) {
