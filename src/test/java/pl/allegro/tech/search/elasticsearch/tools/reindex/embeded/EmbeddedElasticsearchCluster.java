@@ -2,6 +2,7 @@ package pl.allegro.tech.search.elasticsearch.tools.reindex.embeded;
 
 import static org.elasticsearch.node.NodeBuilder.nodeBuilder;
 
+import java.util.List;
 import java.util.stream.Stream;
 
 import org.elasticsearch.action.index.IndexRequestBuilder;
@@ -27,12 +28,12 @@ public final class EmbeddedElasticsearchCluster {
 
   private EmbeddedElasticsearchCluster(String clusterName, int apiPort) {
     NodeBuilder nodeBuilder = nodeBuilder()
-        .clusterName(clusterName)
-        .data(true);
+            .clusterName(clusterName)
+            .data(true);
     ImmutableSettings.Builder settings = nodeBuilder.settings()
-        .put("http.port", ELS_PORT)
-        .put("index.store.type", "memory")
-        .put("transport.tcp.port", apiPort);
+            .put("http.port", ELS_PORT)
+            .put("index.store.type", "memory")
+            .put("transport.tcp.port", apiPort);
 
     dataNode = nodeBuilder.settings(settings).node();
     dataNode.client().admin().cluster().prepareHealth().setWaitForGreenStatus().get();
@@ -83,15 +84,15 @@ public final class EmbeddedElasticsearchCluster {
 
   public ElasticDataPointer createDataPointer(String indexName) {
     return ElasticDataPointerBuilder.builder()
-        .setAddress("http://127.0.0.1:" + ELS_TCP_PORT + "/" + indexName + "/" + ReindexInvokerTest.DATA_TYPE)
-        .setClusterName(CLUSTER_NAME)
-        .build();
+            .setAddress("http://127.0.0.1:" + ELS_TCP_PORT + "/" + indexName + "/" + ReindexInvokerTest.DATA_TYPE)
+            .setClusterName(CLUSTER_NAME)
+            .build();
   }
 
   public void indexWithSampleData(String sourceIndex, String type, Stream<IndexDocument> indexDocumentStream) {
     recreateIndex(sourceIndex);
     indexDocumentStream.forEach(
-        indexDocument -> indexDocument(sourceIndex, type, indexDocument)
+            indexDocument -> indexDocument(sourceIndex, type, indexDocument)
     );
     refreshIndex();
   }
@@ -102,9 +103,9 @@ public final class EmbeddedElasticsearchCluster {
 
   public void createIndex(String index, String type, XContentBuilder mappingDef) {
     dataNode.client().admin().indices()
-        .prepareCreate(index)
-        .addMapping(type, mappingDef)
-        .get();
+            .prepareCreate(index)
+            .addMapping(type, mappingDef)
+            .get();
   }
 
   public ElasticSearchQuery createInitialQuery(String query) {
@@ -113,5 +114,13 @@ public final class EmbeddedElasticsearchCluster {
 
   public ElasticSearchQuery createInitialQuery(String query, String orderByField) {
     return ElasticSearchQueryBuilder.builder().setQuery(query).setSortByField(orderByField).build();
+  }
+
+  public ElasticSearchQuery createInitialQuery(String query, List<Integer> shards) {
+    return ElasticSearchQueryBuilder.builder().setQuery(query).setShards(shards).build();
+  }
+
+  public ElasticSearchQuery createInitialQuery(String query, String orderByField, List<Integer> shards) {
+    return ElasticSearchQueryBuilder.builder().setQuery(query).setSortByField(orderByField).setShards(shards).build();
   }
 }

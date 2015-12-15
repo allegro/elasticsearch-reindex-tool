@@ -15,7 +15,7 @@ public class StringPrefixSegmentationTest {
     //given
     ElasticSearchQuery query = ElasticSearchQueryBuilder.builder().build();
     //when
-    QuerySegmentation segmentation = StringPrefixSegmentation.create("fieldName", Collections.emptyList(), query);
+    StringPrefixSegmentation segmentation = StringPrefixSegmentation.create("fieldName", Collections.emptyList(), query, false);
 
     //then
     assertEquals(query, segmentation.getQuery());

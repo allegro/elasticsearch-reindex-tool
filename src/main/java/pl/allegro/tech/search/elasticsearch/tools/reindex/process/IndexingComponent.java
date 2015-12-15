@@ -32,12 +32,12 @@ public class IndexingComponent {
     for (SearchHit hit : hits) {
       Map<String, Object> source = hit.getSource();
       IndexRequestBuilder requestBuilder = prepareIndex(targetDataPointer.getIndexName(), targetDataPointer
-          .getTypeName(), hit.getId());
+              .getTypeName(), hit.getId());
       if (hit.getFields().get("_ttl") != null) {
-        requestBuilder.setTTL(hit.getFields().get("_ttl").value());
+        requestBuilder.setTTL(hit.getFields().get("_ttl").<Long>value());
       }
       if (hit.getFields().get("_routing") != null) {
-        requestBuilder.setRouting(hit.getFields().get("_routing").value());
+        requestBuilder.setRouting(hit.getFields().get("_routing").<String>value());
       }
       requestBuilder.setSource(source);
       bulkRequest.add(requestBuilder);
@@ -49,9 +49,9 @@ public class IndexingComponent {
     if (bulkRequest.numberOfActions() > 0) {
       BulkResponse bulkItemResponses = bulkRequest.execute().actionGet();
       Set<String> failedIds = Stream.of(bulkItemResponses.getItems())
-          .filter(BulkItemResponse::isFailed)
-          .map(BulkItemResponse::getId)
-          .collect(Collectors.toSet());
+              .filter(BulkItemResponse::isFailed)
+              .map(BulkItemResponse::getId)
+              .collect(Collectors.toSet());
       return Optional.of(new BulkResult(indexedCount, failedIds));
     }
     return Optional.empty();

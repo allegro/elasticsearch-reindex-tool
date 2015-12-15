@@ -14,7 +14,7 @@ public class DoubleFieldSegmentationTest {
   @Test
   public void checkSegmentationFieldName() throws Exception {
     //when
-    DoubleFieldSegmentation segmentation = DoubleFieldSegmentation.create("name", Lists.newArrayList(0.0, 1.0), null);
+    DoubleFieldSegmentation segmentation = DoubleFieldSegmentation.create("name", Lists.newArrayList(0.0, 1.0), null, false);
 
     //then
     assertEquals("name", segmentation.getFieldName().get());
@@ -26,7 +26,7 @@ public class DoubleFieldSegmentationTest {
     ElasticSearchQuery query = ElasticSearchQueryBuilder.builder().build();
 
     //when
-    DoubleFieldSegmentation segmentation = DoubleFieldSegmentation.create("name", Lists.newArrayList(0.0, 1.0), query);
+    DoubleFieldSegmentation segmentation = DoubleFieldSegmentation.create("name", Lists.newArrayList(0.0, 1.0), query, false);
 
     //then
     assertEquals(query, segmentation.getQuery());
@@ -35,28 +35,28 @@ public class DoubleFieldSegmentationTest {
   @Test
   public void checkSegmentationOneThreshold() throws Exception {
     //when
-    DoubleFieldSegmentation segmentation = DoubleFieldSegmentation.create("name", Lists.newArrayList(0.0, 1.0), null);
+    DoubleFieldSegmentation segmentation = DoubleFieldSegmentation.create("name", Lists.newArrayList(0.0, 1.0), null, false);
 
     //then
     assertEquals(1, segmentation.getSegmentsCount());
     assertThat((RangeSegment) segmentation.getThreshold(0).get())
-        .hasLowerOpenBound(0.0)
-        .hasUpperBound(1.0);
+            .hasLowerOpenBound(0.0)
+            .hasUpperBound(1.0);
   }
 
   @Test
   public void checkSegmentationDoubleThreshold() throws Exception {
     //when
-    DoubleFieldSegmentation segmentation = DoubleFieldSegmentation.create("name", Lists.newArrayList(0.0, 1.0, 2.0), null);
+    DoubleFieldSegmentation segmentation = DoubleFieldSegmentation.create("name", Lists.newArrayList(0.0, 1.0, 2.0), null, false);
 
     //then
     assertEquals(2, segmentation.getSegmentsCount());
     assertThat((RangeSegment) segmentation.getThreshold(0).get())
-        .hasLowerOpenBound(0.0)
-        .hasUpperBound(1.0);
+            .hasLowerOpenBound(0.0)
+            .hasUpperBound(1.0);
     assertThat((RangeSegment) segmentation.getThreshold(1).get())
-        .hasLowerOpenBound(1.0)
-        .hasUpperBound(2.0);
+            .hasLowerOpenBound(1.0)
+            .hasUpperBound(2.0);
   }
 
 

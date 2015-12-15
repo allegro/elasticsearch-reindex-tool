@@ -3,10 +3,14 @@ package pl.allegro.tech.search.elasticsearch.tools.reindex.connection;
 import com.google.common.base.Strings;
 import org.elasticsearch.search.sort.SortOrder;
 
+import java.util.Collections;
+import java.util.List;
+
 public class ElasticSearchQueryBuilder {
   private String query;
   private String sortField;
   private SortOrder sortOrder = SortOrder.ASC;
+  private List<Integer> shards = Collections.emptyList();
 
 
   private ElasticSearchQueryBuilder() {
@@ -33,8 +37,17 @@ public class ElasticSearchQueryBuilder {
     return this;
   }
 
+  public ElasticSearchQueryBuilder setShards(List<Integer> shards) {
+    if (shards == null) {
+      this.shards = Collections.emptyList();
+    } else {
+      this.shards = shards;
+    }
+    return this;
+  }
+
   public ElasticSearchQuery build() {
-    return new ElasticSearchQuery(query, sortField, sortOrder);
+    return new ElasticSearchQuery(query, sortField, sortOrder, shards);
   }
 
   public static ElasticSearchQueryBuilder builder() {
