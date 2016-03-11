@@ -76,6 +76,17 @@ With query option:
  
  In this example index querying will be filtered with query and reindex will take place ordered by sort field and sortOrder 
 
+With target index name pattern
+
+Use the actual source-index of the document (useful when you use wildcards for the source-index):
+`./run.sh -s http://host:9300/*/type -t http://host1:9300/${_index}/type1  -sc cluster_name -tc cluster_name1`
+
+Use a field from the document:
+`./run.sh -s http://host:9300/index/type -t http://host1:9300/${customer}/type1  -sc cluster_name -tc cluster_name1`
+
+Use a time-field from the document and apply a format:
+`./run.sh -s http://host:9300/index/type -t http://host1:9300/${startTime:yyyy-MM-dd}/type1  -sc cluster_name -tc cluster_name1`
+
 Options:
 
     -s, source
