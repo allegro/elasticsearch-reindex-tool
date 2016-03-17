@@ -45,14 +45,11 @@ public class QueryComponent {
   public SearchResponse prepareSearchScrollRequest() {
     // find out how many indices and shards are affected by this query to not get huge result sets when there are very many indices affected by the name, e.g. when wildcards are used
     // otherwise we regularly run into OOMs when a query goes against a large number of indices
-    // I did not find a better way to find out the number of Shards then to get a list of indices and for each index query the replicas/shards via the settings
+    // I did not find a better way to find out the number of shards than to query a list of indices and for each index query the number of shards via the settings
     GetSettingsResponse getSettingsResponse = client.admin().indices().getSettings(new GetSettingsRequest().indices(dataPointer.getIndexName())).actionGet();
     int numShards = 0, numIndices = 0;
     for(ObjectCursor<Settings> settings : getSettingsResponse.getIndexToSettings().values()) {
-      int replicas = settings.value.getAsInt("index.number_of_replicas", 0) + 1;
-      int shards = settings.value.getAsInt("index.number_of_shards", 0);
-
-      numShards += replicas*shards;
+      numShards += settings.value.getAsInt("index.number_of_shards", 0);
       numIndices++;
     }
 
