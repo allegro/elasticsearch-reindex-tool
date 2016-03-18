@@ -48,8 +48,8 @@ public class IndexingComponentTest {
     assertEquals("doc-2015-05-23doc", IndexingComponent.computeIndexName("doc-${startTime:yyyy-MM-dd}doc", Collections.singletonMap("startTime", Long.toString(may2015)), null));
     assertEquals("doc-2015-05-23 11:23:00doc", IndexingComponent.computeIndexName("doc-${startTime:yyyy-MM-dd HH:mm:ss}doc", Collections.singletonMap("startTime", Long.toString(may2015)), null));
 
-    map.put("startTime", Long.toString(DATE_FORMAT.parse("2015-05-23 23:12").getTime()));
-    map.put("endTime", "1456265552000");
+    map.put("startTime", Long.toString(DATE_FORMAT.parse("2015-05-23 21:12").getTime()));
+    map.put("endTime", Long.toString(DATE_FORMAT.parse("2015-05-24 23:12").getTime()));
     assertEquals("doc-2015-05-2323:12doc", IndexingComponent.computeIndexName("doc-${startTime:yyyy-MM-dd}${endTime:HH:mm}doc", map, null));
   }
 }
